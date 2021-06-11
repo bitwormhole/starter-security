@@ -6,29 +6,32 @@ import (
 	"github.com/bitwormhole/starter-security/auths/password"
 	"github.com/bitwormhole/starter-security/demo/element"
 	"github.com/bitwormhole/starter/application"
+	"github.com/bitwormhole/starter/markup"
 )
 
-func authService(inst *auths.DefaultAuthenticationManager, ctx application.Context) error {
+type authService struct {
+	markup.Component
+	instance *auths.DefaultAuthenticationManager `id:"auths"`
 
-	// [component]
-	//    id=auths
-
-	return inst.Inject(ctx)
+	ProviderList []auths.AuthenticationProvider `inject:".auth-provider"`
 }
 
-func authByPassword(inst *common.SimpleAuthWrapper, ctx application.Context) error {
+type authByPassword struct {
+	markup.Component `class:"auth-provider"`
+	instance         *common.SimpleAuthWrapper `injectMethod:"inject"`
+}
 
-	// [component]
-	//    class=auth-mechanism
+func (inst *authByPassword) inject(injection application.Injection) error {
 
+	instance := inst.instance
 	const mechanism = "PASSWORD"
 
 	provider := &password.AuthProvider{}
 	provider.Mechanism = mechanism
 	provider.DAO = &element.DemoPasswordAuthDAO{}
 
-	inst.Mechanism = mechanism
-	inst.Inner = provider
+	instance.Mechanism = mechanism
+	instance.Inner = provider
 
 	return nil
 }

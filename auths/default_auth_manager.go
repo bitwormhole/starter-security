@@ -3,44 +3,22 @@ package auths
 import (
 	"errors"
 	"fmt"
-
-	"github.com/bitwormhole/starter/application"
-	"github.com/bitwormhole/starter/lang"
 )
 
 type DefaultAuthenticationManager struct {
-	context   application.Context
-	providers []AuthenticationProvider
+	// context      application.Context
+	ProviderList []AuthenticationProvider
 }
 
 func (inst *DefaultAuthenticationManager) _impl_() AuthenticationManager {
 	return inst
 }
 
-func (inst *DefaultAuthenticationManager) Inject(context application.Context) error {
-
-	in := context.Injector()
-	list := []AuthenticationProvider{}
-
-	in.Inject("*").AsList().Accept(func(name string, holder application.ComponentHolder) bool {
-		o := holder.GetPrototype()
-		_, ok := o.(AuthenticationProvider)
-		return ok
-	}).To(func(o lang.Object) bool {
-		item, ok := o.(AuthenticationProvider)
-		if ok {
-			list = append(list, item)
-		}
-		return ok
-	})
-
-	inst.providers = list
-	inst.context = context
-	return in.Done()
-}
-
 func (inst *DefaultAuthenticationManager) Authenticate(token AuthenticationToken) (AuthenticationInfo, error) {
-	list := inst.providers
+	list := inst.ProviderList
+	if list == nil {
+		return nil, errors.New("DefaultAuthenticationManager.ProviderList == nil , type: []AuthenticationProvider")
+	}
 	if list != nil {
 		for index := range list {
 			item := list[index]
@@ -58,7 +36,7 @@ func (inst *DefaultAuthenticationManager) Authenticate(token AuthenticationToken
 
 func (inst *DefaultAuthenticationManager) Providers() []AuthenticationProvider {
 	dst := []AuthenticationProvider{}
-	src := inst.providers
+	src := inst.ProviderList
 	if src == nil {
 		return dst
 	}

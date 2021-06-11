@@ -7,7 +7,6 @@ import (
 	"github.com/bitwormhole/starter-security/auths/common"
 	starter_security_etc "github.com/bitwormhole/starter-security/demo/etc"
 	"github.com/bitwormhole/starter/application"
-	"github.com/bitwormhole/starter/lang"
 )
 
 func Config(cb application.ConfigBuilder) error {
@@ -31,21 +30,11 @@ func Run(context application.Context) error {
 
 func tryLogin(context application.Context, user string, password string) error {
 
-	in := context.Injector()
-	var authMngr auths.AuthenticationManager = nil
-
-	in.Inject("#auths").To(func(o lang.Object) bool {
-		o2, ok := o.(auths.AuthenticationManager)
-		if ok {
-			authMngr = o2
-		}
-		return ok
-	})
-
-	err := in.Done()
+	o1, err := context.GetComponent("#auths")
 	if err != nil {
 		return err
 	}
+	authMngr := o1.(auths.AuthenticationManager)
 
 	token := &common.AuthToken{
 		UserName: user,

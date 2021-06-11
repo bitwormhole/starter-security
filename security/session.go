@@ -1,4 +1,4 @@
-package sessions
+package security
 
 import (
 	"errors"
@@ -11,12 +11,13 @@ import (
 const SessionKeyName = "github.com/bitwormhole/starter-gin/security/Session#binding"
 
 type Session interface {
-	Open() error
-	Close() error
+	Load() error
+	Reload() error
+	Save() error
 	Commit() error
 	Properties() collection.Properties
-	Getter() SessionGetter
-	Setter() SessionSetter
+	GetInfo() *SessionInfo
+	SetInfo(*SessionInfo)
 }
 
 type SessionInfo struct {
@@ -27,19 +28,6 @@ type SessionInfo struct {
 	auth        bool
 	OpenTime    time.Time
 	CloseTime   time.Time
-}
-
-type SessionGetter interface {
-	GetInfo() *SessionInfo
-}
-
-type SessionSetter interface {
-	SetAccount(value string)
-	SetDisplayName(value string)
-	SetAvatarURL(value string)
-	SetRoles(value string)
-	SetAuth(value bool)
-	SetTime(open time.Time, close time.Time)
 }
 
 type SessionFactory interface {
@@ -67,7 +55,7 @@ func OpenSession(context application.SimpleContext, factory SessionFactory) (Ses
 		return nil, errors.New("SessionFactory==nil")
 	}
 	session = factory.Create(context)
-	session.Open()
+	session.Load()
 	context.SetAttribute(SessionKeyName, session)
 	return session, nil
 }

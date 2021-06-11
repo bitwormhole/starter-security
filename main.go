@@ -15,7 +15,7 @@ var resources embed.FS
 
 func main() {
 	cb := config.NewBuilderFS(&resources, "src/main/resources")
-	demo.Config(cb)
+
 	err := tryMain(cb)
 	if err != nil {
 		panic(err)
@@ -23,6 +23,11 @@ func main() {
 }
 
 func tryMain(cb application.ConfigBuilder) error {
+
+	err := demo.Config(cb)
+	if err != nil {
+		return err
+	}
 
 	context, err := application.Run(cb.Create(), os.Args)
 	if err != nil {
