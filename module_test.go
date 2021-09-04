@@ -8,7 +8,9 @@ import (
 
 func TestSecurity(t *testing.T) {
 
-	rt, _ := tests.TestingStarter(t).UsePanic().RunEx()
+	myMod := Module()
+
+	rt, _ := tests.TestingStarter(t).UsePanic().Use(myMod).RunEx()
 
 	rt.Loop()
 
