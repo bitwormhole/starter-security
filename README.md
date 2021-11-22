@@ -1,4 +1,4 @@
-# Starter-Security
+# Starter-Security (old-style like shiro)
 starter 安全模块
 
 Starter-Security(SS) 是 starter 的安全模块，为基于starter应用提供统一的安全模型。这个模块包含了以下这些主要的组件：
