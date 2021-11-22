@@ -1,8 +1,8 @@
 package common
 
 import (
-	"github.com/bitwormhole/starter-security/auths"
 	"github.com/bitwormhole/starter/lang"
+	"github.com/bitwormhole/starter/security"
 )
 
 type AuthToken struct {
@@ -11,8 +11,8 @@ type AuthToken struct {
 	AuthType string
 }
 
-func (inst *AuthToken) _impl_() auths.AuthenticationToken {
-	return inst
+func (inst *AuthToken) _Impl() security.AuthenticationToken {
+	return nil
 }
 
 func (inst *AuthToken) Principal() lang.Object {

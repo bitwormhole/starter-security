@@ -3,8 +3,9 @@ package password
 import (
 	"errors"
 
-	"github.com/bitwormhole/starter-security/auths"
-	"github.com/bitwormhole/starter-security/auths/common"
+	"github.com/bitwormhole/starter/security"
+	"github.com/bitwormhole/starter/security/auths"
+	"github.com/bitwormhole/starter/security/auths/common"
 )
 
 type AuthProvider struct {
@@ -12,7 +13,7 @@ type AuthProvider struct {
 	Mechanism string
 }
 
-func (inst *AuthProvider) _impl_() auths.AuthenticationProvider {
+func (inst *AuthProvider) _Impl() security.AuthenticationProvider {
 	return inst
 }
 
@@ -20,7 +21,7 @@ func (inst *AuthProvider) Name() string {
 	return "password.AuthProvider"
 }
 
-func (inst *AuthProvider) Supports(token auths.AuthenticationToken) bool {
+func (inst *AuthProvider) Supports(token security.AuthenticationToken) bool {
 	return true
 }
 
@@ -66,7 +67,7 @@ func (inst *AuthProvider) check(token auths.AuthenticationToken, rec common.Auth
 	sum2 := computer.Compute()
 
 	if sum1 != sum2 {
-		return errors.New("Bad user or password.")
+		return errors.New("Bad user or password")
 	}
 
 	return nil

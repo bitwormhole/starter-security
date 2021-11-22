@@ -22,6 +22,12 @@ github.com/bitwormhole/starter v0.0.49 h1:mXBfWrLO15Ub9ZfDWSI9Yhl+EZ1A2H+ulXgdOl
 github.com/bitwormhole/starter v0.0.49/go.mod h1:uYP7flZa2jaZzJ190PVaWyA3HUAEc5v7/KloMwthzA0=
 github.com/bitwormhole/starter v0.0.50 h1:wVDO5Wbt05/8F3aswJUGk6XaVjpv3TxqhAJO4obnKJE=
 github.com/bitwormhole/starter v0.0.50/go.mod h1:3/UtKB8VwcmR5xf8mx4V7vgGLaej89LaoT+KuJKWL60=
+github.com/bitwormhole/starter v0.0.55 h1:L7yq57Czm/vDEL1izrDSsHKjikwEcCjr7Ya98aEDEkA=
+github.com/bitwormhole/starter v0.0.55/go.mod h1:3/UtKB8VwcmR5xf8mx4V7vgGLaej89LaoT+KuJKWL60=
+github.com/bitwormhole/starter v0.0.56 h1:SK3kP7bvC9aylOXvJaih1uEONZKzsIK/xmxN8+/ChCU=
+github.com/bitwormhole/starter v0.0.56/go.mod h1:3/UtKB8VwcmR5xf8mx4V7vgGLaej89LaoT+KuJKWL60=
+github.com/bitwormhole/starter v0.0.57 h1:UxuWXTM9heyUoC+acGcjDMZ++xiJ66qh7LX2MhuW3ns=
+github.com/bitwormhole/starter v0.0.57/go.mod h1:3/UtKB8VwcmR5xf8mx4V7vgGLaej89LaoT+KuJKWL60=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=

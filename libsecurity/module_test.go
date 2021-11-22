@@ -1,4 +1,4 @@
-package startersecurity
+package libsecurity
 
 import (
 	"testing"
@@ -10,7 +10,7 @@ func TestSecurity(t *testing.T) {
 
 	myMod := Module()
 
-	rt, _ := tests.TestingStarter(t).UsePanic().Use(myMod).RunEx()
+	rt, _ := tests.Starter(t).UsePanic().Use(myMod).RunEx()
 
 	rt.Loop()
 

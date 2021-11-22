@@ -1,8 +1,7 @@
 package common
 
 import (
-	"github.com/bitwormhole/starter-security/auths"
-	"github.com/bitwormhole/starter/lang"
+	"github.com/bitwormhole/starter/security"
 )
 
 type AuthInfo struct {
@@ -13,22 +12,6 @@ type AuthInfo struct {
 	AccountRoles string
 }
 
-func (inst *AuthInfo) _impl_() auths.AuthenticationInfo {
-	return inst
-}
-
-func (inst *AuthInfo) Principal() lang.Object {
-	return inst.AccountID
-}
-
-func (inst *AuthInfo) Roles() string {
-	return inst.AccountRoles
-}
-
-func (inst *AuthInfo) Success() bool {
-	return inst.StatusOK
-}
-
-func (inst *AuthInfo) Message() string {
-	return inst.StatusText
+func (inst *AuthInfo) _Impl() security.AuthenticationInfo {
+	return nil
 }
