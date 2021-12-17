@@ -6,7 +6,11 @@ import "context"
 type Subject interface {
 	GetSession() Session
 
+	GetAccess() Access
+
 	SetSession(s Session)
+
+	SetAccess(a Access)
 
 	Login(ctx context.Context, a Authentication) (Identity, error)
 
