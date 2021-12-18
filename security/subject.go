@@ -8,9 +8,13 @@ type Subject interface {
 
 	GetAccess() Access
 
+	IsAuthenticated() bool
+
 	SetSession(s Session)
 
 	SetAccess(a Access)
+
+	SetAuthenticated(authenticated bool)
 
 	Login(ctx context.Context, a Authentication) (Identity, error)
 
