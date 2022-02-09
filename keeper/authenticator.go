@@ -1,4 +1,4 @@
-package security
+package keeper
 
 import "context"
 
@@ -27,4 +27,16 @@ type Authenticator interface {
 // AuthenticationManager 验证管理器
 type AuthenticationManager interface {
 	Authenticate(ctx context.Context, a Authentication) (Identity, error)
+}
+
+// AuthenticatorRegistration 身份验证器注册项
+type AuthenticatorRegistration struct {
+	Name          string
+	Authenticator Authenticator
+}
+
+// AuthenticatorRegistry 身份验证器注册器
+// 【inject:".keeper-authenticator-registry"】
+type AuthenticatorRegistry interface {
+	GetRegistrationList() []*AuthenticatorRegistration
 }

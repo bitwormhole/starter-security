@@ -1,4 +1,4 @@
-package security
+package keeper
 
 import "context"
 
@@ -7,6 +7,8 @@ type Subject interface {
 	GetSession() Session
 
 	GetAccess() Access
+
+	GetContext() context.Context
 
 	IsAuthenticated() bool
 
@@ -25,5 +27,5 @@ type Subject interface {
 
 // SubjectManager 主体管理器
 type SubjectManager interface {
-	GetSubject(ctx context.Context) Subject
+	GetSubject(ctx context.Context) (Subject, error)
 }
