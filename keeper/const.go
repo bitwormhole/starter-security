@@ -9,4 +9,6 @@ const (
 	SessionFieldEmail         = "email"
 	SessionFieldAvatar        = "avatar"
 	SessionFieldAuthenticated = "authenticated"
+	SessionFieldCreatedAt     = "created_at"
+	SessionFieldUpdatedAt     = "updated_at"
 )
