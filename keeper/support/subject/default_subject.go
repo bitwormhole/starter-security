@@ -15,27 +15,38 @@ func (inst *DefaultSubject) _Impl() keeper.Subject {
 	return inst
 }
 
-func (inst *DefaultSubject) GetSession() keeper.Session {
+func (inst *DefaultSubject) GetSession(create bool) (keeper.Session, error) {
 	session := inst.sc.Session
-	if session == nil {
-		session = inst.loadSession()
-		inst.sc.Session = session
+	if session != nil {
+		return session, nil
 	}
-	return session
+
+	if !create {
+		return nil, errors.New("session is nil")
+	}
+
+	// make new
+	session, err := inst.loadSession()
+	if err != nil {
+		return nil, err
+	}
+
+	inst.sc.Session = session
+	return session, nil
 }
 
-func (inst *DefaultSubject) loadSession() keeper.Session {
+func (inst *DefaultSubject) loadSession() (keeper.Session, error) {
 	sc := inst.sc.SecurityContext
 	adapter := inst.sc.Adapter
 	factory := sc.GetSessionProvider().GetSessionFactory()
 	if adapter == nil {
-		panic("the use of keeper.SessionAdapter without setup")
+		return nil, errors.New("the use of keeper.SessionAdapter without setup")
 	}
 	session, err := factory.Create(adapter)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return session
+	return session, nil
 }
 
 func (inst *DefaultSubject) GetAccess() keeper.Access {
@@ -48,7 +59,11 @@ func (inst *DefaultSubject) GetContext() context.Context {
 
 func (inst *DefaultSubject) IsAuthenticated() bool {
 	const name = keeper.SessionFieldAuthenticated
-	getter := inst.GetSession().Properties().Getter()
+	session, err := inst.GetSession(false)
+	if err != nil {
+		return false
+	}
+	getter := session.Properties().Getter()
 	return getter.GetBool(name, false)
 }
 
@@ -68,7 +83,11 @@ func (inst *DefaultSubject) SetAccess(a keeper.Access) {
 
 func (inst *DefaultSubject) SetAuthenticated(authenticated bool) {
 	const name = keeper.SessionFieldAuthenticated
-	setter := inst.GetSession().Properties().Setter()
+	session, err := inst.GetSession(true)
+	if err != nil {
+		panic(err)
+	}
+	setter := session.Properties().Setter()
 	setter.SetBool(name, authenticated)
 }
 

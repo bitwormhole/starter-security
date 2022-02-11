@@ -7,6 +7,7 @@ type Authorization interface {
 	Identity() Identity
 	Method() string
 	Path() string
+	PathPattern() string
 }
 
 // Authorizer 授权者

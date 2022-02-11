@@ -4,7 +4,7 @@ import "context"
 
 // Subject 代表操作的主体
 type Subject interface {
-	GetSession() Session
+	GetSession(create bool) (Session, error)
 
 	GetAccess() Access
 

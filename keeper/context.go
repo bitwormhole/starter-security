@@ -8,6 +8,8 @@ type SecurityContext interface {
 
 	GetSubjects() SubjectManager
 
+	GetPermissions() PermissionManager
+
 	GetSessionProvider() SessionProvider
 }
 
@@ -19,11 +21,17 @@ type Context struct {
 
 	Subjects SubjectManager
 
+	Permissions PermissionManager
+
 	SessionProvider SessionProvider
 }
 
 func (inst *Context) _Impl() SecurityContext {
 	return inst
+}
+
+func (inst *Context) GetPermissions() PermissionManager {
+	return inst.Permissions
 }
 
 func (inst *Context) GetAuthentications() AuthenticationManager {
