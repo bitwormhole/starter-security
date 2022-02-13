@@ -1,31 +1,37 @@
 package keeper
 
-import "context"
+import (
+	"context"
+)
 
 // Subject 代表操作的主体
 type Subject interface {
+
+	// getters
+
 	GetSession(create bool) (Session, error)
-
-	GetAccess() Access
-
-	GetContext() context.Context
 
 	IsAuthenticated() bool
 
-	SetSession(s Session)
+	// setter
 
-	SetAccess(a Access)
+	SetSession(s Session)
 
 	SetAuthenticated(authenticated bool)
 
+	// operation
+
 	Login(ctx context.Context, a Authentication) (Identity, error)
 
-	Logout() error
+	Logout(ctx context.Context) error
 
-	Authorize(ctx context.Context, a Access) (bool, error)
+	Authorize(ctx context.Context) error
+
+	HasPermission(ctx context.Context) bool
 }
 
 // SubjectManager 主体管理器
+// 【inject:"#keeper-subject-manager"】
 type SubjectManager interface {
 	GetSubject(ctx context.Context) (Subject, error)
 }

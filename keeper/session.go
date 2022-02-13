@@ -4,30 +4,29 @@ import (
 	"context"
 	"io"
 
+	"github.com/bitwormhole/starter-security/keeper/users"
 	"github.com/bitwormhole/starter/collection"
 )
 
 // Session 会话
 type Session interface {
-	GetContext() context.Context
 
-	// // 不可持久化的属性
-	// Attributes() collection.Attributes
+	// Session.GetRoles() 和 Access.GetRoles() 分别代表两个作用域的角色，
+	// Session > Access
+	GetRoles() users.Roles
+
+	GetIdentity() Identity
+
+	IsAuthenticated() bool
 
 	// 可持久化的属性
 	Properties() collection.Properties
 
-	BeginTransaction() SessionTransaction
-}
+	SetRoles(roles users.Roles)
 
-// SessionContext 会话上下文
-type SessionContext struct {
-	Access          Access
-	Adapter         SessionAdapter
-	Context         context.Context
-	SecurityContext SecurityContext
-	Session         Session
-	Subject         Subject
+	SetIdentity(ident Identity)
+
+	BeginTransaction() SessionTransaction
 }
 
 // SessionTransaction 表示一个会话的事务
@@ -38,12 +37,11 @@ type SessionTransaction interface {
 
 // SessionFactory 会话工厂
 type SessionFactory interface {
-	Create(adapter SessionAdapter) (Session, error)
+	Create(ctx context.Context, adapter SessionAdapter) (Session, error)
 }
 
 // SessionAdapter 会话适配器
 type SessionAdapter interface {
-	GetContext() context.Context
 	Load(s Session) error
 	Store(s Session) error
 }

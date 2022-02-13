@@ -9,6 +9,7 @@ import (
 	authentication0x38bbbc "github.com/bitwormhole/starter-security/keeper/support/authentication"
 	authorization0xbd4cc5 "github.com/bitwormhole/starter-security/keeper/support/authorization"
 	core0xb21891 "github.com/bitwormhole/starter-security/keeper/support/core"
+	permission0xf95196 "github.com/bitwormhole/starter-security/keeper/support/permission"
 	session0x14c51e "github.com/bitwormhole/starter-security/keeper/support/session"
 	subject0xae5c7a "github.com/bitwormhole/starter-security/keeper/support/subject"
 	application "github.com/bitwormhole/starter/application"
@@ -58,9 +59,36 @@ func autoGenConfig(cb application.ConfigBuilder) error {
 		return err
 	}
 
-	// component: com3-session0x14c51e.DefaultSessionProvider
+	// component: keeper-default-permission-loader-factory
 	cominfobuilder.Next()
-	cominfobuilder.ID("com3-session0x14c51e.DefaultSessionProvider").Class("keeper-session-provider-registry").Aliases("").Scope("")
+	cominfobuilder.ID("keeper-default-permission-loader-factory").Class("").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComDefaultPermissionLoaderFactory{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
+	// component: keeper-permission-manager
+	cominfobuilder.Next()
+	cominfobuilder.ID("keeper-permission-manager").Class("keeper-configurer").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComDefaultPermissionManager{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
+	// component: keeper-default-permission-template-factory
+	cominfobuilder.Next()
+	cominfobuilder.ID("keeper-default-permission-template-factory").Class("").Aliases("").Scope("")
+	cominfobuilder.Factory((&comFactory4pComDefaultPermissionTemplateFactory{}).init())
+	err = cominfobuilder.CreateTo(cb)
+	if err != nil {
+		return err
+	}
+
+	// component: com6-session0x14c51e.DefaultSessionProvider
+	cominfobuilder.Next()
+	cominfobuilder.ID("com6-session0x14c51e.DefaultSessionProvider").Class("keeper-session-provider-registry").Aliases("").Scope("")
 	cominfobuilder.Factory((&comFactory4pComDefaultSessionProvider{}).init())
 	err = cominfobuilder.CreateTo(cb)
 	if err != nil {
@@ -98,12 +126,14 @@ type comFactory4pComDefaultAuthenticationManager struct {
     mPrototype * authentication0x38bbbc.DefaultAuthenticationManager
 
 	
+	mRegistryListSelector config.InjectionSelector
 
 }
 
 func (inst * comFactory4pComDefaultAuthenticationManager) init() application.ComponentFactory {
 
 	
+	inst.mRegistryListSelector = config.NewInjectionSelector(".keeper-authenticator-registry",nil)
 
 
 	inst.mPrototype = inst.newObject()
@@ -139,7 +169,23 @@ func (inst * comFactory4pComDefaultAuthenticationManager) Destroy(instance appli
 }
 
 func (inst * comFactory4pComDefaultAuthenticationManager) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
-	return nil
+	
+	obj := inst.castObject(instance)
+	obj.RegistryList = inst.getterForFieldRegistryListSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldRegistryListSelector
+func (inst * comFactory4pComDefaultAuthenticationManager) getterForFieldRegistryListSelector (context application.InstanceContext) []keeper0x6d39ef.AuthenticatorRegistry {
+	list1 := inst.mRegistryListSelector.GetList(context)
+	list2 := make([]keeper0x6d39ef.AuthenticatorRegistry, 0, len(list1))
+	for _, item1 := range list1 {
+		item2, ok := item1.(keeper0x6d39ef.AuthenticatorRegistry)
+		if ok {
+			list2 = append(list2, item2)
+		}
+	}
+	return list2
 }
 
 
@@ -152,12 +198,14 @@ type comFactory4pComDefaultAuthorizationManager struct {
     mPrototype * authorization0xbd4cc5.DefaultAuthorizationManager
 
 	
+	mAuthorizerRegistryListSelector config.InjectionSelector
 
 }
 
 func (inst * comFactory4pComDefaultAuthorizationManager) init() application.ComponentFactory {
 
 	
+	inst.mAuthorizerRegistryListSelector = config.NewInjectionSelector(".keeper-authorizer-registry",nil)
 
 
 	inst.mPrototype = inst.newObject()
@@ -193,7 +241,23 @@ func (inst * comFactory4pComDefaultAuthorizationManager) Destroy(instance applic
 }
 
 func (inst * comFactory4pComDefaultAuthorizationManager) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
-	return nil
+	
+	obj := inst.castObject(instance)
+	obj.AuthorizerRegistryList = inst.getterForFieldAuthorizerRegistryListSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldAuthorizerRegistryListSelector
+func (inst * comFactory4pComDefaultAuthorizationManager) getterForFieldAuthorizerRegistryListSelector (context application.InstanceContext) []keeper0x6d39ef.AuthorizerRegistry {
+	list1 := inst.mAuthorizerRegistryListSelector.GetList(context)
+	list2 := make([]keeper0x6d39ef.AuthorizerRegistry, 0, len(list1))
+	for _, item1 := range list1 {
+		item2, ok := item1.(keeper0x6d39ef.AuthorizerRegistry)
+		if ok {
+			list2 = append(list2, item2)
+		}
+	}
+	return list2
 }
 
 
@@ -404,7 +468,203 @@ func (inst * comFactory4pComKeeperCore) getterForFieldSessionProvidersSelector (
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// comFactory4pComDefaultSessionProvider : the factory of component: com3-session0x14c51e.DefaultSessionProvider
+// comFactory4pComDefaultPermissionLoaderFactory : the factory of component: keeper-default-permission-loader-factory
+type comFactory4pComDefaultPermissionLoaderFactory struct {
+
+    mPrototype * permission0xf95196.DefaultPermissionLoaderFactory
+
+	
+
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) init() application.ComponentFactory {
+
+	
+
+
+	inst.mPrototype = inst.newObject()
+    return inst
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) newObject() * permission0xf95196.DefaultPermissionLoaderFactory {
+	return & permission0xf95196.DefaultPermissionLoaderFactory {}
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) castObject(instance application.ComponentInstance) * permission0xf95196.DefaultPermissionLoaderFactory {
+	return instance.Get().(*permission0xf95196.DefaultPermissionLoaderFactory)
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) GetPrototype() lang.Object {
+	return inst.mPrototype
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) NewInstance() application.ComponentInstance {
+	return config.SimpleInstance(inst, inst.newObject())
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) AfterService() application.ComponentAfterService {
+	return inst
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) Init(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) Destroy(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComDefaultPermissionLoaderFactory) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+	return nil
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+// comFactory4pComDefaultPermissionManager : the factory of component: keeper-permission-manager
+type comFactory4pComDefaultPermissionManager struct {
+
+    mPrototype * permission0xf95196.DefaultPermissionManager
+
+	
+	mAppCtxSelector config.InjectionSelector
+	mPermissionRegistryListSelector config.InjectionSelector
+	mPermissionsPropertiesResourceNameSelector config.InjectionSelector
+
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) init() application.ComponentFactory {
+
+	
+	inst.mAppCtxSelector = config.NewInjectionSelector("context",nil)
+	inst.mPermissionRegistryListSelector = config.NewInjectionSelector(".keeper-permission-registry",nil)
+	inst.mPermissionsPropertiesResourceNameSelector = config.NewInjectionSelector("${security.keeper.permissions.properties}",nil)
+
+
+	inst.mPrototype = inst.newObject()
+    return inst
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) newObject() * permission0xf95196.DefaultPermissionManager {
+	return & permission0xf95196.DefaultPermissionManager {}
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) castObject(instance application.ComponentInstance) * permission0xf95196.DefaultPermissionManager {
+	return instance.Get().(*permission0xf95196.DefaultPermissionManager)
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) GetPrototype() lang.Object {
+	return inst.mPrototype
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) NewInstance() application.ComponentInstance {
+	return config.SimpleInstance(inst, inst.newObject())
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) AfterService() application.ComponentAfterService {
+	return inst
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) Init(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) Destroy(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComDefaultPermissionManager) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+	
+	obj := inst.castObject(instance)
+	obj.AppCtx = inst.getterForFieldAppCtxSelector(context)
+	obj.PermissionRegistryList = inst.getterForFieldPermissionRegistryListSelector(context)
+	obj.PermissionsPropertiesResourceName = inst.getterForFieldPermissionsPropertiesResourceNameSelector(context)
+	return context.LastError()
+}
+
+//getterForFieldAppCtxSelector
+func (inst * comFactory4pComDefaultPermissionManager) getterForFieldAppCtxSelector (context application.InstanceContext) application.Context {
+    return context.Context()
+}
+
+//getterForFieldPermissionRegistryListSelector
+func (inst * comFactory4pComDefaultPermissionManager) getterForFieldPermissionRegistryListSelector (context application.InstanceContext) []keeper0x6d39ef.PermissionRegistry {
+	list1 := inst.mPermissionRegistryListSelector.GetList(context)
+	list2 := make([]keeper0x6d39ef.PermissionRegistry, 0, len(list1))
+	for _, item1 := range list1 {
+		item2, ok := item1.(keeper0x6d39ef.PermissionRegistry)
+		if ok {
+			list2 = append(list2, item2)
+		}
+	}
+	return list2
+}
+
+//getterForFieldPermissionsPropertiesResourceNameSelector
+func (inst * comFactory4pComDefaultPermissionManager) getterForFieldPermissionsPropertiesResourceNameSelector (context application.InstanceContext) string {
+    return inst.mPermissionsPropertiesResourceNameSelector.GetString(context)
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+// comFactory4pComDefaultPermissionTemplateFactory : the factory of component: keeper-default-permission-template-factory
+type comFactory4pComDefaultPermissionTemplateFactory struct {
+
+    mPrototype * permission0xf95196.DefaultPermissionTemplateFactory
+
+	
+
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) init() application.ComponentFactory {
+
+	
+
+
+	inst.mPrototype = inst.newObject()
+    return inst
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) newObject() * permission0xf95196.DefaultPermissionTemplateFactory {
+	return & permission0xf95196.DefaultPermissionTemplateFactory {}
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) castObject(instance application.ComponentInstance) * permission0xf95196.DefaultPermissionTemplateFactory {
+	return instance.Get().(*permission0xf95196.DefaultPermissionTemplateFactory)
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) GetPrototype() lang.Object {
+	return inst.mPrototype
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) NewInstance() application.ComponentInstance {
+	return config.SimpleInstance(inst, inst.newObject())
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) AfterService() application.ComponentAfterService {
+	return inst
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) Init(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) Destroy(instance application.ComponentInstance) error {
+	return nil
+}
+
+func (inst * comFactory4pComDefaultPermissionTemplateFactory) Inject(instance application.ComponentInstance, context application.InstanceContext) error {
+	return nil
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+// comFactory4pComDefaultSessionProvider : the factory of component: com6-session0x14c51e.DefaultSessionProvider
 type comFactory4pComDefaultSessionProvider struct {
 
     mPrototype * session0x14c51e.DefaultSessionProvider

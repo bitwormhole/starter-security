@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bitwormhole/starter-security/keeper"
+	"github.com/bitwormhole/starter-security/keeper/users"
 	"github.com/bitwormhole/starter/collection"
 	"github.com/bitwormhole/starter/vlog"
 )
@@ -19,14 +20,14 @@ func (inst *DefaultSessionFactory) _Impl() keeper.SessionFactory {
 }
 
 // Create ...
-func (inst *DefaultSessionFactory) Create(adapter keeper.SessionAdapter) (keeper.Session, error) {
+func (inst *DefaultSessionFactory) Create(ctx context.Context, adapter keeper.SessionAdapter) (keeper.Session, error) {
 
-	holder, err := keeper.GetHolder(adapter.GetContext())
+	holder, err := keeper.GetHolder(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	sc := holder.GetSessionContext()
+	sc := holder.GetAccessContext()
 
 	session := &DefaultSession{}
 	session.adapter = adapter
@@ -45,7 +46,7 @@ func (inst *DefaultSessionFactory) Create(adapter keeper.SessionAdapter) (keeper
 
 // DefaultSession ...
 type DefaultSession struct {
-	context    *keeper.SessionContext
+	context    *keeper.AccessContext
 	adapter    keeper.SessionAdapter
 	props      collection.Properties
 	wantCommit bool
@@ -64,6 +65,64 @@ func (inst *DefaultSession) GetContext() context.Context {
 // func (inst *DefaultSession) Attributes() collection.Attributes {
 // 	return inst.atts
 // }
+
+// IsAuthenticated ...
+func (inst *DefaultSession) IsAuthenticated() bool {
+	const key = keeper.SessionFieldAuthenticated
+	return inst.Properties().Getter().GetBool(key, false)
+}
+
+// GetRoles ...
+func (inst *DefaultSession) GetRoles() users.Roles {
+	const key = keeper.SessionFieldRoles
+	value := inst.Properties().GetProperty(key, "")
+	return users.Roles(value)
+}
+
+// GetIdentity ...
+func (inst *DefaultSession) GetIdentity() keeper.Identity {
+
+	getter := inst.Properties().Getter()
+	ib := keeper.IdentityBuilder{}
+
+	userid := getter.GetInt64(keeper.SessionFieldUserID, 0)
+	roles := getter.GetString(keeper.SessionFieldRoles, "")
+	username := getter.GetString(keeper.SessionFieldUserName, "")
+	uuid := getter.GetString(keeper.SessionFieldUserUUID, "")
+
+	ib.Avatar = getter.GetString(keeper.SessionFieldAvatar, "")
+	ib.Nickname = getter.GetString(keeper.SessionFieldDisplayName, "")
+	ib.Roles = users.Roles(roles)
+
+	ib.UserID = users.UserID(userid)
+	ib.UserName = users.UserName(username)
+	ib.UserUUID = users.UserUUID(uuid)
+
+	return ib.Identity()
+}
+
+// SetIdentity ...
+func (inst *DefaultSession) SetIdentity(ident keeper.Identity) {
+	if ident == nil {
+		return
+	}
+	setter := inst.Properties().Setter()
+
+	setter.SetString(keeper.SessionFieldAvatar, ident.Avatar())
+	setter.SetString(keeper.SessionFieldDisplayName, ident.Nickname())
+	setter.SetString(keeper.SessionFieldRoles, ident.Roles().String())
+
+	setter.SetString(keeper.SessionFieldUserID, ident.UserID().String())
+	setter.SetString(keeper.SessionFieldUserName, ident.UserName().String())
+	setter.SetString(keeper.SessionFieldUserUUID, ident.UserUUID().String())
+}
+
+// SetRoles ...
+func (inst *DefaultSession) SetRoles(r users.Roles) {
+	const key = keeper.SessionFieldRoles
+	value := r.String()
+	inst.Properties().SetProperty(key, value)
+}
 
 // Properties ...
 func (inst *DefaultSession) Properties() collection.Properties {

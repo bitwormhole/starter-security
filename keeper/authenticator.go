@@ -1,21 +1,14 @@
 package keeper
 
-import "context"
-
-// Identity 身份
-type Identity interface {
-	UserID() string
-	UserUUID() string
-	Nickname() string
-	Avatar() string
-	Roles() []string
-}
+import (
+	"context"
+)
 
 // Authentication 身份验证请求
 type Authentication interface {
 	Mechanism() string
-	UserID() string
-	UserSecret() []byte
+	User() string
+	Secret() []byte
 }
 
 // Authenticator 身份验证器
@@ -31,7 +24,8 @@ type AuthenticationManager interface {
 
 // AuthenticatorRegistration 身份验证器注册项
 type AuthenticatorRegistration struct {
-	Name          string
+	Name          string // 名称是全局唯一的
+	Mechanism     string // 多个 Authenticator 可以支持同一种机制
 	Authenticator Authenticator
 }
 

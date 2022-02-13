@@ -44,9 +44,9 @@ func doTestKeeper(t *testing.T) error {
 	return rt.Exit()
 }
 
-func doTestKeeper2(ac application.Context, cc context.Context) error {
+func doTestKeeper2(appCtx application.Context, cc context.Context) error {
 
-	o1, err := ac.GetComponent("#keeper-subject-manager")
+	o1, err := appCtx.GetComponent("#keeper-subject-manager")
 	if err != nil {
 		return err
 	}
@@ -55,8 +55,8 @@ func doTestKeeper2(ac application.Context, cc context.Context) error {
 	if err != nil {
 		return err
 	}
-	sc := holder.GetSessionContext()
-	sc.Adapter = session.NewDefaultSessionAdapter(cc)
+	ac := holder.GetAccessContext()
+	ac.Adapter = session.NewDefaultSessionAdapter(cc)
 
 	subjects := o1.(keeper.SubjectManager)
 	subject, err := subjects.GetSubject(cc)

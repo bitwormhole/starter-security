@@ -8,14 +8,14 @@ import (
 
 // Holder 持有会话相关的对象
 type Holder struct {
-	target *SessionContext
+	target *AccessContext
 }
 
-// GetSessionContext 获取会话上下文，如果没有就新建一个
-func (inst *Holder) GetSessionContext() *SessionContext {
+// GetAccessContext 获取会话上下文，如果没有就新建一个
+func (inst *Holder) GetAccessContext() *AccessContext {
 	t := inst.target
 	if t == nil {
-		t = &SessionContext{}
+		t = &AccessContext{}
 		inst.target = t
 	}
 	return t

@@ -1,6 +1,6 @@
 package keeper
 
-// SecurityContext 安全上下文
+// SecurityContext 安全上下文接口
 type SecurityContext interface {
 	GetAuthentications() AuthenticationManager
 
@@ -13,7 +13,9 @@ type SecurityContext interface {
 	GetSessionProvider() SessionProvider
 }
 
-// Context 默认的安全上下文
+////////////////////////////////////////////////////////////////////////////////
+
+// Context 安全上下文
 type Context struct {
 	Authentications AuthenticationManager
 
@@ -49,3 +51,5 @@ func (inst *Context) GetSubjects() SubjectManager {
 func (inst *Context) GetSessionProvider() SessionProvider {
 	return inst.SessionProvider
 }
+
+////////////////////////////////////////////////////////////////////////////////

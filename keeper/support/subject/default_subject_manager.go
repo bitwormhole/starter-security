@@ -33,12 +33,12 @@ func (inst *DefaultSubjectManager) GetSubject(ctx context.Context) (keeper.Subje
 		return nil, err
 	}
 
-	sc := holder.GetSessionContext()
-	subject := &DefaultSubject{sc: sc}
+	ac := holder.GetAccessContext()
+	subject := &DefaultSubject{ac: ac}
 
-	sc.Context = ctx
-	sc.SecurityContext = inst.ksCtx
-	sc.Subject = subject
+	ac.Context = ctx
+	ac.SecurityContext = inst.ksCtx
+	ac.Subject = subject
 
 	// lazy load
 	// sc.Access = nil

@@ -2,9 +2,11 @@ package keeper
 
 // 定义会话中包含的基本字段
 const (
-	SessionFieldUserID        = "userid"
-	SessionFieldUserName      = "username"
-	SessionFieldDisplayName   = "displayname"
+	SessionFieldUserID        = "user_id"
+	SessionFieldUserUUID      = "user_uuid"
+	SessionFieldUserName      = "user_name"
+	SessionFieldDisplayName   = "display_name"
+	SessionFieldRoles         = "roles"
 	SessionFieldPhone         = "phone"
 	SessionFieldEmail         = "email"
 	SessionFieldAvatar        = "avatar"

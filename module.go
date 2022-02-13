@@ -3,6 +3,7 @@ package startersecurity
 import (
 	"embed"
 
+	"github.com/bitwormhole/starter-security/gen/configdemo"
 	"github.com/bitwormhole/starter-security/gen/configlib"
 	"github.com/bitwormhole/starter-security/gen/configtest"
 	"github.com/bitwormhole/starter/application"
@@ -27,6 +28,28 @@ func Module() application.Module {
 	mb.Name(myName).Version(myVersion).Revision(myRevision)
 	mb.Resources(collection.LoadEmbedResources(&theResFS, "src/main/resources"))
 	mb.OnMount(configlib.ExportConfigForKeeperLib)
+
+	return mb.Create()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//go:embed src/demo/resources
+var theSrcDemoRes embed.FS
+
+// ModuleForDemo  导出本模块
+func ModuleForDemo() application.Module {
+
+	parent := Module()
+	mb := &application.ModuleBuilder{}
+
+	mb.Name(parent.GetName() + "#demo")
+	mb.Version(parent.GetVersion())
+	mb.Revision(parent.GetRevision())
+
+	mb.Resources(collection.LoadEmbedResources(&theSrcDemoRes, "src/demo/resources"))
+	mb.OnMount(configdemo.ExportConfigForKeeperDemo)
+	mb.Dependency(parent)
 
 	return mb.Create()
 }

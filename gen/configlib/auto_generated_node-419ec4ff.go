@@ -8,20 +8,24 @@ import (
 	authentication0x38bbbc "github.com/bitwormhole/starter-security/keeper/support/authentication"
 	authorization0xbd4cc5 "github.com/bitwormhole/starter-security/keeper/support/authorization"
 	core0xb21891 "github.com/bitwormhole/starter-security/keeper/support/core"
+	permission0xf95196 "github.com/bitwormhole/starter-security/keeper/support/permission"
 	session0x14c51e "github.com/bitwormhole/starter-security/keeper/support/session"
 	subject0xae5c7a "github.com/bitwormhole/starter-security/keeper/support/subject"
+	application0x67f6c5 "github.com/bitwormhole/starter/application"
 	markup0x23084a "github.com/bitwormhole/starter/markup"
 )
 
 type pComDefaultAuthenticationManager struct {
 	instance *authentication0x38bbbc.DefaultAuthenticationManager
 	 markup0x23084a.Component `id:"keeper-authentication-manager" class:"keeper-configurer"`
+	RegistryList []keeper0x6d39ef.AuthenticatorRegistry `inject:".keeper-authenticator-registry"`
 }
 
 
 type pComDefaultAuthorizationManager struct {
 	instance *authorization0xbd4cc5.DefaultAuthorizationManager
 	 markup0x23084a.Component `id:"keeper-authorization-manager" class:"keeper-configurer"`
+	AuthorizerRegistryList []keeper0x6d39ef.AuthorizerRegistry `inject:".keeper-authorizer-registry"`
 }
 
 
@@ -36,6 +40,27 @@ type pComKeeperCore struct {
 	Authorizers []keeper0x6d39ef.AuthorizerRegistry `inject:".keeper-authorizer-registry"`
 	Configurers []keeper0x6d39ef.Configurer `inject:".keeper-configurer"`
 	SessionProviders []keeper0x6d39ef.SessionProviderRegistry `inject:".keeper-session-provider-registry"`
+}
+
+
+type pComDefaultPermissionLoaderFactory struct {
+	instance *permission0xf95196.DefaultPermissionLoaderFactory
+	 markup0x23084a.Component `id:"keeper-default-permission-loader-factory"`
+}
+
+
+type pComDefaultPermissionManager struct {
+	instance *permission0xf95196.DefaultPermissionManager
+	 markup0x23084a.Component `id:"keeper-permission-manager" class:"keeper-configurer"`
+	AppCtx application0x67f6c5.Context `inject:"context"`
+	PermissionRegistryList []keeper0x6d39ef.PermissionRegistry `inject:".keeper-permission-registry"`
+	PermissionsPropertiesResourceName string `inject:"${security.keeper.permissions.properties}"`
+}
+
+
+type pComDefaultPermissionTemplateFactory struct {
+	instance *permission0xf95196.DefaultPermissionTemplateFactory
+	 markup0x23084a.Component `id:"keeper-default-permission-template-factory"`
 }
 
 
