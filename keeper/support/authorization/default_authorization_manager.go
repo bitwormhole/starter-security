@@ -75,16 +75,21 @@ func (inst *DefaultAuthorizationManager) Authorize(ctx context.Context) error {
 func (inst *DefaultAuthorizationManager) preparePermission(h *keeper.Holder) error {
 
 	ac := h.GetAccessContext()
+	perm := ac.Permission
+	if perm != nil {
+		return nil
+	}
+
 	ctx := ac.Context
 	access := ac.SecurityAccess
 	pm := ac.SecurityContext.GetPermissions()
+
 	template, err := pm.FindTemplate(ctx, access)
 	if err != nil {
 		return err
 	}
 
-	params := access.Params()
-	perm, err := template.LoadPermission(params)
+	perm, err = template.LoadPermission(access.Params())
 	if err != nil {
 		return err
 	}

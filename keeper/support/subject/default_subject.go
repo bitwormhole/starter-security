@@ -115,7 +115,7 @@ func (inst *DefaultSubject) SetAuthenticated(authenticated bool) {
 	setter.SetBool(name, authenticated)
 }
 
-// Login ...
+// Login 登录
 func (inst *DefaultSubject) Login(ctx context.Context, a keeper.Authentication) (keeper.Identity, error) {
 
 	sc := inst.ac.SecurityContext
@@ -162,33 +162,78 @@ func (inst *DefaultSubject) Logout(ctx context.Context) error {
 	return errors.New("no impl")
 }
 
-// Authorize ...
+// Authorize  授权
 func (inst *DefaultSubject) Authorize(ctx context.Context) error {
+
+	perm := inst.ac.Permission
+	if perm == nil {
+		access := inst.ac.Access
+		pm := inst.ac.SecurityContext.GetPermissions()
+		pt, err := pm.FindTemplate(ctx, access)
+		if err != nil {
+			return err
+		}
+		perm2, err := pt.LoadPermission(access.Params())
+		if err != nil {
+			return err
+		}
+		perm = perm2
+		inst.ac.Permission = perm2
+	}
+
 	am := inst.ac.SecurityContext.GetAuthorizations()
 	return am.Authorize(ctx)
 }
 
-// HasPermission ...
+// HasPermission 鉴权
 func (inst *DefaultSubject) HasPermission(ctx context.Context) bool {
 
+	const ok = true
+	const forbidden = false
+
 	perm := inst.ac.Permission
-	roles := inst.ac.Roles
-
 	if perm == nil {
-		return false
+		return forbidden
 	}
 
-	if perm.AcceptRole(users.RoleAnonymous) {
-		return true
+	if perm.AcceptRole(users.RoleAnonymous) || perm.AcceptRole(users.RoleAnyone) {
+		return ok
 	}
 
-	if perm.AcceptRole(users.RoleAnyone) {
-		return true
-	}
+	access := inst.ac.SecurityAccess
+	roles := access.GetRoles()
 
 	if perm.AcceptRoles(roles) {
-		return true
+		return ok
 	}
 
-	return false
+	// 获取身份
+	subject := access.GetSubject()
+	session, err := subject.GetSession(true)
+	if err != nil {
+		return forbidden
+	}
+
+	roles = session.GetRoles()
+	ident := session.GetIdentity()
+
+	if perm.AcceptRoles(roles) {
+		return ok
+	}
+
+	// check owner
+	if perm.AcceptRole(users.RoleOwner) {
+		if perm.IsOwner(ident) {
+			return ok
+		}
+	}
+
+	// check firend
+	if perm.AcceptRole(users.RoleFriend) {
+		if perm.IsFriend(ident) {
+			return ok
+		}
+	}
+
+	return forbidden
 }
