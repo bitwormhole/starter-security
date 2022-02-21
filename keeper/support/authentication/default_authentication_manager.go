@@ -69,24 +69,33 @@ func (inst *DefaultAuthenticationManager) getRegistrationList() []*keeper.Authen
 
 // Authenticate ...
 func (inst *DefaultAuthenticationManager) Authenticate(ctx context.Context, a keeper.Authentication) (keeper.Identity, error) {
-
-	mechanism := inst.normalizeMechanismName(a.Mechanism())
 	all := inst.getRegistrationList()
-
 	for _, item := range all {
-		if item.Mechanism != mechanism {
-			continue
+		if inst.isSupported(ctx, a, item) {
+			ident, err := item.Authenticator.Verify(ctx, a)
+			if err == nil {
+				return ident, nil
+			}
+			vlog.Warn(err)
 		}
-		if !item.Authenticator.Supports(ctx, a) {
-			continue
-		}
-		ident, err := item.Authenticator.Verify(ctx, a)
-		if err == nil {
-			return ident, nil
-		}
-		vlog.Warn(err)
 	}
-
+	mechanism := inst.normalizeMechanismName(a.Mechanism())
 	vlog.Error("bad auth, with mechanism:" + mechanism)
 	return nil, errors.New("bad auth")
+}
+
+func (inst *DefaultAuthenticationManager) isSupported(ctx context.Context, a1 keeper.Authentication, ar *keeper.AuthenticatorRegistration) bool {
+	if ar == nil {
+		return false
+	}
+	a2 := ar.Authenticator
+	if a1 == nil || a2 == nil {
+		return false
+	}
+	m1 := inst.normalizeMechanismName(a1.Mechanism())
+	m2 := inst.normalizeMechanismName(ar.Mechanism)
+	if m1 != m2 {
+		return false
+	}
+	return a2.Supports(ctx, a1)
 }
