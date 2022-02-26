@@ -4,12 +4,13 @@ import "github.com/bitwormhole/starter-security/keeper/users"
 
 // Identity 身份
 type Identity interface {
+	Avatar() string
+	Email() string
+	Nickname() string
+	Roles() users.Roles
 	UserID() users.UserID
 	UserName() users.UserName
 	UserUUID() users.UserUUID
-	Nickname() string
-	Avatar() string
-	Roles() users.Roles
 }
 
 // UserGroup 用户组
@@ -22,23 +23,25 @@ type UserGroup interface {
 
 // IdentityBuilder 用来创建一个简单的身份信息
 type IdentityBuilder struct {
+	Avatar   string
+	Email    string
+	Nickname string
+	Roles    users.Roles
 	UserID   users.UserID
 	UserName users.UserName
 	UserUUID users.UserUUID
-	Nickname string
-	Avatar   string
-	Roles    users.Roles
 }
 
 // Identity 创建一个简单的身份信息
 func (inst *IdentityBuilder) Identity() Identity {
 	ident := &simpleIdentity{
+		avatar:   inst.Avatar,
+		email:    inst.Email,
+		nickname: inst.Nickname,
+		roles:    inst.Roles,
 		userid:   inst.UserID,
 		username: inst.UserName,
 		uuid:     inst.UserUUID,
-		nickname: inst.Nickname,
-		avatar:   inst.Avatar,
-		roles:    inst.Roles,
 	}
 	return ident
 }
@@ -46,12 +49,13 @@ func (inst *IdentityBuilder) Identity() Identity {
 ////////////////////////////////////////////////////////////////////////////////
 
 type simpleIdentity struct {
+	avatar   string
+	email    string
+	nickname string
+	roles    users.Roles
 	userid   users.UserID
 	username users.UserName
 	uuid     users.UserUUID
-	nickname string
-	avatar   string
-	roles    users.Roles
 }
 
 func (inst *simpleIdentity) UserID() users.UserID {
@@ -76,6 +80,10 @@ func (inst *simpleIdentity) Avatar() string {
 
 func (inst *simpleIdentity) Roles() users.Roles {
 	return inst.roles
+}
+
+func (inst *simpleIdentity) Email() string {
+	return inst.email
 }
 
 ////////////////////////////////////////////////////////////////////////////////

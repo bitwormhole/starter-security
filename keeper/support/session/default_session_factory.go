@@ -72,6 +72,12 @@ func (inst *DefaultSession) IsAuthenticated() bool {
 	return inst.Properties().Getter().GetBool(key, false)
 }
 
+// SetAuthenticated ...
+func (inst *DefaultSession) SetAuthenticated(a bool) {
+	const key = keeper.SessionFieldAuthenticated
+	inst.Properties().Setter().SetBool(key, a)
+}
+
 // GetRoles ...
 func (inst *DefaultSession) GetRoles() users.Roles {
 	const key = keeper.SessionFieldRoles
@@ -91,6 +97,7 @@ func (inst *DefaultSession) GetIdentity() keeper.Identity {
 	uuid := getter.GetString(keeper.SessionFieldUserUUID, "")
 
 	ib.Avatar = getter.GetString(keeper.SessionFieldAvatar, "")
+	ib.Email = getter.GetString(keeper.SessionFieldEmail, "")
 	ib.Nickname = getter.GetString(keeper.SessionFieldDisplayName, "")
 	ib.Roles = users.Roles(roles)
 
@@ -109,6 +116,7 @@ func (inst *DefaultSession) SetIdentity(ident keeper.Identity) {
 	setter := inst.Properties().Setter()
 
 	setter.SetString(keeper.SessionFieldAvatar, ident.Avatar())
+	setter.SetString(keeper.SessionFieldEmail, ident.Email())
 	setter.SetString(keeper.SessionFieldDisplayName, ident.Nickname())
 	setter.SetString(keeper.SessionFieldRoles, ident.Roles().String())
 

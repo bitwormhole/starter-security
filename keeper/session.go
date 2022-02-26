@@ -26,6 +26,8 @@ type Session interface {
 
 	SetIdentity(ident Identity)
 
+	SetAuthenticated(a bool)
+
 	BeginTransaction() SessionTransaction
 }
 
