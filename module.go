@@ -12,8 +12,8 @@ import (
 
 const (
 	myName     = "github.com/bitwormhole/starter-security"
-	myVersion  = "v0.1.6"
-	myRevision = 13
+	myVersion  = "v0.1.7"
+	myRevision = 14
 )
 
 ////////////////////////////////////////////////////////////////////////////////
