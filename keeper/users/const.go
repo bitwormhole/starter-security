@@ -2,12 +2,13 @@ package users
 
 // 定义一些常用的的角色
 const (
+	RoleAdmin     Role = "admin"
 	RoleAnonymous Role = "anonymous"
 	RoleAnyone    Role = "anyone"
-	RoleNormal    Role = "normal"
+	RoleAuthe     Role = "authe" // 已认证的
 	RoleFriend    Role = "friend"
-	RoleOwner     Role = "owner"
 	RoleManager   Role = "manager"
-	RoleAdmin     Role = "admin"
+	RoleNormal    Role = "normal"
+	RoleOwner     Role = "owner"
 	RoleRoot      Role = "root"
 )
